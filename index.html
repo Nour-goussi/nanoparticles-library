@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliothèque des Nanoparticules</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5e6d3 0%, #e8d5b7 50%, #ddbf94 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 30px;
+            min-height: 100vh;
+            align-items: start;
+        }
+        .header {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: #8b4513;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(139, 69, 19, 0.2);
+        }
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            color: #a0522d;
+        }
+        .qr-section {
+            margin: 0 auto 30px auto;
+            text-align: center;
+            background: rgba(255,255,255,0.85);
+            border-radius: 20px;
+            padding: 18px 8px 8px 8px;
+            box-shadow: 0 4px 16px rgba(139,69,19,0.07);
+            max-width: 380px;
+        }
+        .qr-section p {
+            color: #8b4513;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        #qrcode {
+            margin: 0 auto;
+        }
+        .qr-link {
+            margin-top: 12px;
+            color: #a0522d;
+            display: block;
+            text-decoration: underline;
+            word-break: break-all;
+            font-size: 0.98rem;
+        }
+        .search-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(139, 69, 19, 0.1);
+            height: fit-content;
+            border: 2px solid rgba(139, 69, 19, 0.1);
+        }
+        .search-section {
+            margin-bottom: 25px;
+        }
+        .search-section label {
+            display: block;
+            font-weight: bold;
+            color: #8b4513;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        .search-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddbf94;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #8b4513;
+            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+        }
+        .product-list {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 2px solid #ddbf94;
+            border-radius: 10px;
+            background: white;
+        }
+        .product-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f7fafc;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        .product-item:hover {
+            background: #f7fafc;
+            transform: translateX(5px);
+        }
+        .product-item.selected {
+            background: linear-gradient(135deg, #8b4513, #a0522d);
+            color: white;
+            transform: translateX(5px);
+        }
+        .product-item:last-child {
+            border-bottom: none;
+        }
+        .details-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(139, 69, 19, 0.1);
+            min-height: 600px;
+            border: 2px solid rgba(139, 69, 19, 0.1);
+        }
+        .product-info {
+            margin-bottom: 30px;
+        }
+        .product-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #8b4513;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #ddbf94;
+        }
+        .nanoparticle-codes {
+            font-size: 1.1rem;
+            color: #8b4513;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f5e6d3;
+            border-radius: 10px;
+            border-left: 4px solid #8b4513;
+        }
+        .nanoparticle-details {
+            margin-top: 20px;
+        }
+        .nanoparticle-card {
+            background: white;
+            border: 2px solid #ddbf94;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.08);
+            transition: transform 0.2s ease;
+        }
+        .nanoparticle-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.12);
+        }
+        .nano-code {
+            display: inline-block;
+            background: linear-gradient(135deg, #8b4513, #a0522d);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        .nano-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #8b4513;
+            margin-bottom: 10px;
+        }
+        .nano-usage, .nano-risks {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        .nano-usage strong, .nano-risks strong {
+            color: #8b4513;
+        }
+        .risks-text {
+            color: #e53e3e;
+            font-weight: 500;
+        }
+        .no-selection {
+            text-align: center;
+            color: #a0522d;
+            font-size: 1.2rem;
+            margin-top: 100px;
+        }
+        .product-image {
+            width: 100%;
+            max-width: 300px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .no-image {
+            width: 100%;
+            max-width: 300px;
+            height: 200px;
+            background: #f7fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a0aec0;
+            font-style: italic;
+            margin: 20px auto;
+        }
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 10px;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .search-panel, .details-panel {
+                padding: 20px;
+            }
+        }
+        .product-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        .product-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .product-list::-webkit-scrollbar-thumb {
+            background: #8b4513;
+            border-radius: 4px;
+        }
+        .product-list::-webkit-scrollbar-thumb:hover {
+            background: #a0522d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔬 Bibliothèque des Nanoparticules</h1>
+            <p>Découvrez les nanoparticules présentes dans vos produits alimentaires</p>
+        </div>
+        <div class="qr-section">
+            <p>Partagez ce site :</p>
+            <div id="qrcode"></div>
+            <a id="qr-link" class="qr-link" href="#" target="_blank"></a>
+        </div>
+        <div class="search-panel">
+            <div class="search-section">
+                <label for="searchInput">Rechercher un produit :</label>
+                <input type="text" id="searchInput" class="search-input" placeholder="Tapez le nom d'un produit...">
+            </div>
+            <div class="product-list" id="productList"></div>
+        </div>
+        <div class="details-panel" id="detailsPanel">
+            <div class="no-selection">
+                <p>📱 Sélectionnez un produit pour voir les détails</p>
+            </div>
+        </div>
+    </div>
+    <!-- QRCode.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        // QR code generation
+        const appLink = window.location.origin + window.location.pathname;
+        document.getElementById('qr-link').textContent = appLink;
+        document.getElementById('qr-link').href = appLink;
+        new QRCode(document.getElementById("qrcode"), {
+            text: appLink,
+            width: 140,
+            height: 140
+        });
+
+        // Nanoparticles logic
+        const products = {
+            "Biscottes impérial": "E170",
+            "Boisson concentrée au goût d'Amonde": "E171",
+            "Boisson concentrée au goût de fruits": "E171",
+            "Boisson concentrée au goût de grenadine": "E171",
+            "Boisson concentrée au goût d'Orgeat": "E171",
+            "Boisson Hazem au goût de pistache": "E171",
+            "Boom mix": "E171",
+            "Chips Doritos": "E551",
+            "Chupa Chups": "E171",
+            "Crackzel": "E551",
+            "Cracocarte": "E152",
+            "Dragées aux amandes délices de SFAX": "E171",
+            "Dragées aux amandes": "E171",
+            "Dragées aux chocolats": "E172",
+            "Dragées dorées": "E171",
+            "Dragées mondo": "E171",
+            "Elit crispy peanuts": "E171",
+            "Florida": "E171",
+            "Florident": "E171",
+            "Mentos": "E171",
+            "Fromage Kraft": "E341",
+            "Fruit'o": "E171",
+            "Golden seed": "E170",
+            "HARIBO goldenbears": "E171",
+            "Indomie chicken flavour": "E551",
+            "Iroise": "E170",
+            "Jellopy": "E171",
+            "Le petit moulin MENTOLA": "E171",
+            "M&Ms chocolate": "E170",
+            "M&Ms peanuts": "E170, E172",
+            "Elit chocolate sticks": "E171",
+            "Maxwell House cappuccino": "E551",
+            "Salami de dinde CHAHIA": "E551",
+            "Sour wand": "E171",
+            "Chips koll youm": "E551"
+        };
+
+        const nanoparticles = {
+            "E170": {
+                "Nom": "Carbonate de Calcium",
+                "Utilisation": "Agent de blanchiment et régulateur d'acidité",
+                "Risques": "Une consommation excessive peut entraîner des problèmes digestifs"
+            },
+            "E171": {
+                "Nom": "Dioxyde de Titane",
+                "Utilisation": "Agent de blanchiment et d'opacification",
+                "Risques": "Potentiellement cancérogène, interdit dans certains pays"
+            },
+            "E172": {
+                "Nom": "Oxyde de Fer",
+                "Utilisation": "Agent de coloration alimentaire naturel",
+                "Risques": "Peut entraîner une accumulation excessive de fer dans le corps"
+            },
+            "E551": {
+                "Nom": "Dioxyde de Silicium",
+                "Utilisation": "Agent anti-agglomérant",
+                "Risques": "Les effets à long terme sur la santé sont incertains"
+            },
+            "E152": {
+                "Nom": "Noir de Carbone",
+                "Utilisation": "Agent de coloration noire artificielle",
+                "Risques": "Interdit dans plusieurs pays en raison des risques de toxicité potentielle"
+            },
+            "E341": {
+                "Nom": "Phosphate de Calcium",
+                "Utilisation": "Régulateur d'acidité et agent anti-agglomérant",
+                "Risques": "Une consommation excessive peut perturber l'équilibre calcium-phosphate"
+            }
+        };
+
+        // DOM elements
+        const searchInput = document.getElementById('searchInput');
+        const productList = document.getElementById('productList');
+        const detailsPanel = document.getElementById('detailsPanel');
+        let selectedProduct = null;
+
+        function init() {
+            updateProductList();
+            searchInput.addEventListener('input', updateProductList);
+        }
+
+        function updateProductList() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filteredProducts = Object.keys(products)
+                .filter(product => product.toLowerCase().includes(searchTerm))
+                .sort();
+
+            productList.innerHTML = '';
+            filteredProducts.forEach(product => {
+                const productItem = document.createElement('div');
+                productItem.className = 'product-item';
+                productItem.textContent = product;
+                productItem.addEventListener('click', () => selectProduct(product, productItem));
+                productList.appendChild(productItem);
+            });
+        }
+
+        function selectProduct(product, element) {
+            document.querySelectorAll('.product-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            selectedProduct = product;
+            displayProductDetails(product);
+        }
+
+        function displayProductDetails(product) {
+            const nanoparticleCodes = products[product].split(', ');
+            let detailsHTML = `
+                <div class="product-info">
+                    <div class="product-name">${product}</div>
+                    <div class="nanoparticle-codes">
+                        <strong>Nanoparticules contenues :</strong> ${nanoparticleCodes.join(', ')}
+                    </div>
+                </div>
+                <div class="nanoparticle-details">
+            `;
+            nanoparticleCodes.forEach(code => {
+                if (nanoparticles[code]) {
+                    const nano = nanoparticles[code];
+                    detailsHTML += `
+                        <div class="nanoparticle-card">
+                            <div class="nano-code">${code}</div>
+                            <div class="nano-name">${nano.Nom}</div>
+                            <div class="nano-usage">
+                                <strong>Utilisation :</strong> ${nano.Utilisation}
+                            </div>
+                            <div class="nano-risks">
+                                <strong>Risques :</strong> <span class="risks-text">${nano.Risques}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            detailsHTML += `</div>`;
+            detailsPanel.innerHTML = detailsHTML;
+        }
+
+        init();
+    </script>
+</body>
+</html>
